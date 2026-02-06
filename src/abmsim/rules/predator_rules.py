@@ -19,7 +19,7 @@ def keep_away_refuge(boid, cref):
     boid.dy += uy * cref.repel
 
 """Rule 1: Stay at a distance from other predators"""
-def check_prey(pred):
+def check_prey(pred, boids):
     nearby_boids = [b for b in boids if pred.distance(b) <= HUNTING_SIGHT]
     """More explicit way:
     nearby_boids = []
@@ -36,7 +36,7 @@ def check_prey(pred):
         return False
         
 
-def check_signal(pred):
+def check_signal(pred, preds):
     signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
     if signal_preds:
         pred.signal_pos = (signal_preds[0].x, signal_preds[0].y)
@@ -52,13 +52,13 @@ def wander(pred):
     pred.dx = pred.speed * math.cos(pred.head)
     pred.dy = pred.speed * math.sin(pred.head)
 
-def pred_repel_check(pred):
+def pred_repel_check(pred, preds):
     repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
     repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
     
     return [len(repel_wander)>0, len(repel_hunt)>0]
 
-def pred_repel_wander(pred):
+def pred_repel_wander(pred, preds):
     nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
     movex = 0
     movey = 0
@@ -69,7 +69,7 @@ def pred_repel_wander(pred):
     pred.dx += movex * PRED_REP_WANDER_FACTOR
     pred.dy += movey * PRED_REP_WANDER_FACTOR
 
-def pred_repel_hunt(pred):
+def pred_repel_hunt(pred, preds):
     nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
     movex = 0
     movey = 0

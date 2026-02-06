@@ -4,14 +4,14 @@
 import math
 from abmsim.config import SPEED_LIMIT, FLEE_FACTOR, AVOID_FACTOR, BOID_VIS_RANGE, MATCHING_FACTOR, CATCH_DIST
 
-def detect_preds(boid, flee_dist):
+def detect_preds(boid, preds, flee_dist):
     close_preds = [p for p in preds if boid.distance(p) < flee_dist]
     if close_preds:
         boid.state = "alarm"
     else:
         boid.state = "calm"     
 
-def flee(boid, flee_dist):
+def flee(boid, preds, flee_dist):
     #find the predators that are within the flee zone
     close_preds = [p for p in preds if boid.distance(p) < flee_dist]
     if not close_preds:
