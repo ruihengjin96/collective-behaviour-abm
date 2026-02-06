@@ -1,0 +1,120 @@
+# -------------------------------
+# PREDATOR RULES
+# -------------------------------
+import random
+from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
+
+def keep_away_refuge(boid, cref):
+    dist_to_c = boid.distance(cref)
+    if dist_to_c == 0:
+        return
+    
+    dist_to_bound = dist_to_c - cref.r
+    if dist_to_bound > cref.buff:
+        return
+
+    ux = (boid.x - cref.x) / dist_to_c
+    uy = (boid.y - cref.y) / dist_to_c
+    boid.dx += ux * cref.repel
+    boid.dy += uy * cref.repel
+
+"""Rule 1: Stay at a distance from other predators"""
+def check_prey(pred):
+    nearby_boids = [b for b in boids if pred.distance(b) <= HUNTING_SIGHT]
+    """More explicit way:
+    nearby_boids = []
+    for boid in boids:
+        if pred.distance(boid) <= HUNTING_SIGHT:
+            nearby_boids.append(boid)
+    """
+    if nearby_boids:
+        pred.signal_state = "on"
+        pred.signal_timer = 10
+        return True
+    else:
+        pred.signal_state = "off"
+        return False
+        
+
+def check_signal(pred):
+    signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
+    if signal_preds:
+        pred.signal_pos = (signal_preds[0].x, signal_preds[0].y)
+        pred.signal_state = "on"
+        return True
+    else:
+        pred.signal_pos = []
+        return False
+
+def wander(pred):
+    delta_head = random.uniform(-pred.max_turn_wander, pred.max_turn_wander) 
+    pred.head += delta_head
+    pred.dx = pred.speed * math.cos(pred.head)
+    pred.dy = pred.speed * math.sin(pred.head)
+
+def pred_repel_check(pred):
+    repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
+    repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
+    
+    return [len(repel_wander)>0, len(repel_hunt)>0]
+
+def pred_repel_wander(pred):
+    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
+    movex = 0
+    movey = 0
+    for other in nearby_other_preds:
+        movex += pred.x - other.x
+        movey += pred.y - other.y
+
+    pred.dx += movex * PRED_REP_WANDER_FACTOR
+    pred.dy += movey * PRED_REP_WANDER_FACTOR
+
+def pred_repel_hunt(pred):
+    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
+    movex = 0
+    movey = 0
+    for other in nearby_other_preds:
+        movex += pred.x - other.x
+        movey += pred.y - other.y
+
+    pred.dx += movex * PRED_REP_HUNT_FACTOR
+    pred.dy += movey * PRED_REP_HUNT_FACTOR
+    
+def move_toward_signal(pred):
+    if not pred.signal_pos:
+        return  # no signal to respond to
+    
+    target_x = pred.signal_pos[0]
+    target_y = pred.signal_pos[1]
+    # Compute vector toward signal
+    dx = target_x - pred.x
+    dy = target_y - pred.y
+
+    # Optionally scale by a factor for smooth movement toward signal
+    pred.dx += dx * pred.signal_response_strength
+    pred.dy += dy * pred.signal_response_strength
+
+    # Update heading and speed if needed
+    pred.head = math.atan2(pred.dy, pred.dx)
+    pred.speed = math.hypot(pred.dx, pred.dy)
+    
+
+"""Rule 2: Move toward the centroid of boids within hunting sight"""
+def hunt(pred, boids):
+    # 1. Find all boids within the hunting sight
+    close_boids = [b for b in boids if pred.distance(b) < HUNTING_SIGHT]
+    if not close_boids:
+        return
+    
+    # 2. Find the centroid of the boids
+    avg_x = sum(b.x for b in close_boids) / len(close_boids)        
+    avg_y = sum(b.y for b in close_boids) / len(close_boids)
+    
+    # 3. Compute the difference b/n boid position and predator position
+    move_x = avg_x - pred.x
+    move_y = avg_y - pred.y
+    
+    # 4. Predator move toward nearest boid
+    pred.dx += move_x * 0.02 
+    pred.dy += move_y * 0.02
+    """Note: should parameterize this factor"""

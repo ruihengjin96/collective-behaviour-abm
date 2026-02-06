@@ -1,8 +1,3 @@
-import random
-import math
-import tkinter as tk
-import numpy as np
-
 # -------------------------------
 # CONFIGURATION
 # -------------------------------
