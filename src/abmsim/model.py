@@ -3,10 +3,10 @@ import random
 from abmsim.agents import Boid, Predator
 from abmsim.config import NUM_BOIDS, NUM_PREDS, WIDTH, HEIGHT, DFLT_AVOID_DIST
 from abmsim.rules.boid_rules import (
-    avoid_others, match_velocity, is_eaten
+    avoid_others, match_velocity, is_eaten, detect_preds, flee
 )
-from abmsim.rules.predator_rules import hunt
-from abmsim.rules.shared_rules import limit_speed
+from abmsim.rules.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander)
+from abmsim.rules.shared_rules import (limit_speed, move_toward_center)
 
 
 class Model:
@@ -38,11 +38,13 @@ class Model:
 
     def step(self, avoid_dist, flee_dist):
         # remove eaten boids
-        self.boids = [
-            b for b in self.boids if not is_eaten(b, self.predators)
-        ]
+        eaten_boids = []
+        for b in self.boids:
+            if is_eaten(b, self.predators):
+                eaten_boids.append(b)
+        self.boids = [b for b in self.boids if b not in eaten_boids]
         
-        # boids
+        # boid interaction rules
         for b in self.boids:
             avoid_others(b, self.boids, avoid_dist)
             match_velocity(b, self.boids)
@@ -50,7 +52,7 @@ class Model:
             b.x = (b.x + b.dx) % WIDTH
             b.y = (b.y + b.dy) % HEIGHT
 
-        # predators
+        # predator interaction rules
         for p in self.predators:
             hunt(p, self.boids)
             limit_speed(p)
