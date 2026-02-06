@@ -46,15 +46,43 @@ class Model:
         
         # boid interaction rules
         for b in self.boids:
-            avoid_others(b, self.boids, avoid_dist)
-            match_velocity(b, self.boids)
+            detect_preds(b, self.predators, flee_dist)
+            if b.state == "alarm":
+                flee(b, self.predators, flee_dist)
+            else:
+                move_toward_center(b, self.boids)
+                avoid_others(b, self.boids, avoid_dist)
+                match_velocity(b, self.boids)
             limit_speed(b)
             b.x = (b.x + b.dx) % WIDTH
             b.y = (b.y + b.dy) % HEIGHT
 
         # predator interaction rules
         for p in self.predators:
-            hunt(p, self.boids)
+            p.signal_state = "off"
+            prey_detected = check_prey(p, self.boids)
+            signal_detected = check_signal(p, self.predators)
+            pred_avoid = pred_repel_check(p, self.predators)
+            
+            if prey_detected:
+                p.signal_state = "on"
+                hunt(p, self.boids)
+                if pred_avoid[1]:
+                    pred_repel_hunt(p, self.predators)
+                else:
+                    move_toward_center(p, self.predators)
+            elif signal_detected:
+                p.signal_state = "on"
+                if pred_avoid[1]:
+                    pred_repel_hunt(p, self.predators)
+                else:
+                    move_toward_signal(p)
+            else:
+                p.signal_state = "off"
+                if pred_avoid[0]:
+                    pred_repel_wander(p, self.predators)
+                else:
+                    wander(p)
             limit_speed(p)
             p.x = (p.x + p.dx) % WIDTH
             p.y = (p.y + p.dy) % HEIGHT

@@ -8,7 +8,7 @@ from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST
 def run():
     model = Model()
     model.init_boids()
-    #model.init_predators()
+    model.init_predators()
 
     root = tk.Tk()
     canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")

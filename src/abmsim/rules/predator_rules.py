@@ -2,6 +2,7 @@
 # PREDATOR RULES
 # -------------------------------
 import random
+import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
 
 def keep_away_refuge(boid, cref):
