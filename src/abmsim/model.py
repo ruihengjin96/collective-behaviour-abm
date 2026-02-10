@@ -86,3 +86,4 @@ class Model:
             limit_speed(p)
             p.x = (p.x + p.dx) % WIDTH
             p.y = (p.y + p.dy) % HEIGHT
+#test connectivity
