@@ -20,16 +20,14 @@ To be updated
 # How to run the model
 
 ## Clone and install
-Clone the repository:
-
-    git clone ...
-    cd collective-behaviour-abm
+Clone the repository<br>
 
 Create a virtual environment (optional but recommended)
 
 Install in editable mode:
-
-    pip install -e .
+```
+pip install -e .
+```
 
 ## How to run the model in visualization mode
 Inside the main directory, run:
