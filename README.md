@@ -1,5 +1,7 @@
 # Model overview
 To be updated
+<img width="1154" height="787" alt="image" src="https://github.com/user-attachments/assets/8f95c61b-8d95-46fb-83f2-832f2fecaa78" />
+
 
 # File descriptions
 - `agents.py` – class definitions
