@@ -14,4 +14,4 @@ and this project adheres to Semantic Versioning.
 - Instruction on installation and running the model in README
 
 ### Changed
-- Moved original single-file model, and 2 scripts that run the model into the temp/ folder.
+- Moved original single-file model `boid_predator_v3.py`, and 2 scripts that run the model, namely `run_baselinemodel.py` and `run_model_tk.py` into the temp/ folder.
