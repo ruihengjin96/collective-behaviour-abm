@@ -547,13 +547,14 @@ def update(canvas, avoid_dist_var, flee_dist_var):
 # MAIN
 # -------------------------------
 def main():
-    global WIDTH, HEIGHT
+    global WIDTH, HEIGHT # This isn't good, shouldn't declare globals here.
 
     root = tk.Tk()
+    # ----- Widgets are added between here and root.mainloop() -----
 
     root.title("Boids Simulation")
     
-    # Adding slider for AVOID_DIST
+    # Creating a Tkinter Frame widget -- a container for other widgets
     control = tk.Frame(root)
     control.pack(side = tk.RIGHT, fill = tk.Y)
 

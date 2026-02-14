@@ -5,8 +5,9 @@ from abmsim.config import NUM_BOIDS, NUM_PREDS, WIDTH, HEIGHT, DFLT_AVOID_DIST
 from abmsim.rules.boid_rules import (
     avoid_others, match_velocity, is_eaten, detect_preds, flee
 )
-from abmsim.rules.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander)
+from abmsim.rules.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
 from abmsim.rules.shared_rules import (limit_speed, move_toward_center)
+from abmsim.environment import cref
 
 
 class Model:
@@ -60,10 +61,11 @@ class Model:
         # predator interaction rules
         for p in self.predators:
             p.signal_state = "off"
+            
             prey_detected = check_prey(p, self.boids)
             signal_detected = check_signal(p, self.predators)
             pred_avoid = pred_repel_check(p, self.predators)
-            
+            keep_away_refuge(p, cref)
             if prey_detected:
                 p.signal_state = "on"
                 hunt(p, self.boids)

@@ -5,8 +5,8 @@ import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
 
-def keep_away_refuge(boid, cref):
-    dist_to_c = boid.distance(cref)
+def keep_away_refuge(pred, cref):
+    dist_to_c = pred.distance(cref)
     if dist_to_c == 0:
         return
     
@@ -14,10 +14,10 @@ def keep_away_refuge(boid, cref):
     if dist_to_bound > cref.buff:
         return
 
-    ux = (boid.x - cref.x) / dist_to_c
-    uy = (boid.y - cref.y) / dist_to_c
-    boid.dx += ux * cref.repel
-    boid.dy += uy * cref.repel
+    ux = (pred.x - cref.x) / dist_to_c
+    uy = (pred.y - cref.y) / dist_to_c
+    pred.dx += ux * cref.repel
+    pred.dy += uy * cref.repel
 
 """Rule 1: Stay at a distance from other predators"""
 def check_prey(pred, boids):
