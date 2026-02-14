@@ -34,6 +34,11 @@ Inside the main directory, run:
 ```
 python temp/run_model_tk.py
 ```
+Or run the following in python:
+```
+from abmsim.ui_tk import run
+run()
+```
 
 ## How to run the model in simulation & data collection mode
 To be updated...
