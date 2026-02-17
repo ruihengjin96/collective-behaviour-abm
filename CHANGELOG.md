@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog,
 and this project adheres to Semantic Versioning.
 
+## [To-Do List] (priority in parentheses)
+### Model functionalities
+- Write a function that runs headless simulation for specified number of runs and collects basic data of each agent (High)
+
+### GUI and interactivity
+- Add start, stop, close buttons (High)
+- Add sliders for number of boids and predators (High)
+
+### Naming things
+- Rename certain functions to make them more intuitive (Mid)
+- Brainstorm short, accurate and unique package names (Mid)
+
 ## [Unreleased]
 ### Added
 ### Changed
