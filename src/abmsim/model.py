@@ -88,4 +88,8 @@ class Model:
             limit_speed(p)
             p.x = (p.x + p.dx) % WIDTH
             p.y = (p.y + p.dy) % HEIGHT
+    
+    def clear(self):
+        self.boids.clear()
+        self.predators.clear()
 #test connectivity

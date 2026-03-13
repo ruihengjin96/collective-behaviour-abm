@@ -30,6 +30,51 @@ def run():
           outline = "white", fill = "#e6f5f4", tags = "refuge"          
     )
     
+    running = {"id": None} 
+    
+    def draw():
+        canvas.delete("agents")
+        for b in model.boids:
+            angle = math.atan2(b.dy, b.dx)
+            x, y = b.x, b.y,
+            p1 = (x, y)
+            p2 = (x - 15 * math.cos(angle) + 5 * math.sin(angle),
+                  y - 15 * math.sin(angle) - 5 * math.cos(angle))
+            p3 = (x - 15 * math.cos(angle) - 5 * math.sin(angle),
+                  y - 15 * math.sin(angle) + 5 * math.cos(angle))
+            canvas.create_polygon([p1, p2, p3], fill="#56b1fc", outline="", tags = "agents")   
+        for p in model.predators:
+            angle = math.atan2(p.dy, p.dx)
+            x, y = p.x, p.y,
+            p1 = (x, y)
+            p2 = (x - 20 * math.cos(angle) + 7 * math.sin(angle),
+                  y - 20 * math.sin(angle) - 7 * math.cos(angle))
+            p3 = (x - 20 * math.cos(angle) - 7 * math.sin(angle),
+                  y - 20 * math.sin(angle) + 7 * math.cos(angle))
+            canvas.create_polygon([p1, p2, p3], fill="#fc6056", outline="", tags = "agents")
+
+    def loop():
+            model.step(avoid_var.get(), flee_var.get())
+            draw()
+            running["id"] = canvas.after(33, loop) # schedules the function loop() to be called every 33 milliseconds
+    #loop()
+    def start_sim():
+          if running ["id"] is None:
+                loop()
+    
+    def stop_sim():
+          if running ["id"] is not None:
+                canvas.after_cancel(running["id"])
+                running["id"] = None
+    
+    def reset_arena():
+          stop_sim()
+          model.clear()
+          model.init_boids()
+          canvas.delete("agents")
+          #draw()
+    
+#------ Widgets for interface ------#    
     # Creating a slider for the distance threshold for repulsion between boids
     avoid_var = tk.DoubleVar(value=DFLT_AVOID_DIST)
     tk.Label(ctrlpnl, text = "Boid avoid distance").pack()
@@ -54,38 +99,13 @@ def run():
         variable = flee_var
     ).pack() 
     
-    # Creating a button that releases predators
-    tk.Button(
-          ctrlpnl,
-          text = "Release predators",
-          command = model.init_predators,
-    ).pack()
+    # Creating buttons for various functions
     
-    def draw():
-        canvas.delete("agents")
-        for b in model.boids:
-            angle = math.atan2(b.dy, b.dx)
-            x, y = b.x, b.y,
-            p1 = (x, y)
-            p2 = (x - 15 * math.cos(angle) + 5 * math.sin(angle),
-                  y - 15 * math.sin(angle) - 5 * math.cos(angle))
-            p3 = (x - 15 * math.cos(angle) - 5 * math.sin(angle),
-                  y - 15 * math.sin(angle) + 5 * math.cos(angle))
-            canvas.create_polygon([p1, p2, p3], fill="#56b1fc", outline="", tags = "agents")   
-        for p in model.predators:
-            angle = math.atan2(p.dy, p.dx)
-            x, y = p.x, p.y,
-            p1 = (x, y)
-            p2 = (x - 20 * math.cos(angle) + 7 * math.sin(angle),
-                  y - 20 * math.sin(angle) - 7 * math.cos(angle))
-            p3 = (x - 20 * math.cos(angle) - 7 * math.sin(angle),
-                  y - 20 * math.sin(angle) + 7 * math.cos(angle))
-            canvas.create_polygon([p1, p2, p3], fill="#fc6056", outline="", tags = "agents")
+    tk.Button(ctrlpnl, text = "Start simulation", command = start_sim).pack()
+    tk.Button(ctrlpnl, text = "Stop simulation", command = stop_sim).pack()
+    tk.Button(ctrlpnl, text = "Reset arena", command = reset_arena).pack()
+    #tk.Button(ctrlpnl, text = "Close model", command = model.init_predators).pack()
+    tk.Button(ctrlpnl, text = "Release predators", command = model.init_predators).pack()  
+#------ End of widgets ------#  
 
-    def loop():
-        model.step(avoid_var.get(), flee_var.get())
-        draw()
-        canvas.after(33, loop)
-
-    loop()
     root.mainloop()
