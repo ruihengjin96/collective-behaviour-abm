@@ -2,7 +2,7 @@
 import tkinter as tk
 import math
 from abmsim.model import Model
-from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST, REFUGE_R, REFUGE_CX, REFUGE_CY
+from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST, REFUGE_R, REFUGE_CX, REFUGE_CY, SPEED_LIMIT, CATCH_DIST
 
 
 def run():
@@ -54,7 +54,7 @@ def run():
             canvas.create_polygon([p1, p2, p3], fill="#fc6056", outline="", tags = "agents")
 
     def loop():
-            model.step(avoid_var.get(), flee_var.get())
+            model.step(avoid_var.get(), flee_var.get(), catch_dist_var.get(), speedlim_var.get())
             draw()
             running["id"] = canvas.after(33, loop) # schedules the function loop() to be called every 33 milliseconds
     #loop()
@@ -98,6 +98,34 @@ def run():
         orient = tk.HORIZONTAL,
         variable = flee_var
     ).pack() 
+    
+    ###not working yet### Slider for agent speed limit 
+    speedlim_var = tk.DoubleVar(value = SPEED_LIMIT)
+    tk.Label(ctrlpnl, text = "Speed limit").pack()
+    tk.Scale(
+        ctrlpnl, 
+        from_ = 1, 
+        to = 100, 
+        resolution = 1, 
+        orient = tk.HORIZONTAL, 
+        variable = speedlim_var
+    ).pack()
+    
+    # Slider for catch distance
+    catch_dist_var = tk.DoubleVar(value = CATCH_DIST)
+    tk.Label(ctrlpnl, text = "Catch distance").pack()
+    tk.Scale(
+        ctrlpnl, 
+        from_ = 10, 
+        to = 100, 
+        resolution = 5, 
+        orient = tk.HORIZONTAL, 
+        variable = catch_dist_var
+    ).pack()
+    
+    
+    # Slider for
+    #TURN_FACTOR
     
     # Creating buttons for various functions
     

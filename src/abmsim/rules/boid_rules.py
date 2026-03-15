@@ -65,8 +65,8 @@ def match_velocity(boid, neighbors):
         boid.dx += (avg_dx - boid.dx) * MATCHING_FACTOR
         boid.dy += (avg_dy - boid.dy) * MATCHING_FACTOR
 
-def is_eaten(boid, predators):
+def is_eaten(boid, predators, catch_dist):
     for pred in predators:
-        if boid.distance(pred) < CATCH_DIST:
+        if boid.distance(pred) < catch_dist:
             return True
     return False

@@ -37,11 +37,11 @@ class Model:
                 )
             )
 
-    def step(self, avoid_dist, flee_dist):
+    def step(self, avoid_dist, flee_dist, catch_dist, speedlim):
         # remove eaten boids
         eaten_boids = []
         for b in self.boids:
-            if is_eaten(b, self.predators):
+            if is_eaten(b, self.predators, catch_dist):
                 eaten_boids.append(b)
         self.boids = [b for b in self.boids if b not in eaten_boids]
         
@@ -54,7 +54,7 @@ class Model:
                 move_toward_center(b, self.boids)
                 avoid_others(b, self.boids, avoid_dist)
                 match_velocity(b, self.boids)
-            limit_speed(b)
+            limit_speed(b, speedlim)
             b.x = (b.x + b.dx) % WIDTH
             b.y = (b.y + b.dy) % HEIGHT
 
@@ -85,7 +85,7 @@ class Model:
                     pred_repel_wander(p, self.predators)
                 else:
                     wander(p)
-            limit_speed(p)
+            limit_speed(p, speedlim)
             p.x = (p.x + p.dx) % WIDTH
             p.y = (p.y + p.dy) % HEIGHT
     

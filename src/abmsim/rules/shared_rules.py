@@ -21,10 +21,10 @@ def move_toward_center(agent, others): # used by both boids and predators
         agent.dx += (center_x - agent.x) * agent.centering_factor
         agent.dy += (center_y - agent.y) * agent.centering_factor
 
-def limit_speed(boid):
+def limit_speed(boid, speedlim):
     speed = math.hypot(boid.dx, boid.dy)
-    if speed > SPEED_LIMIT:
-        scale = SPEED_LIMIT / speed
+    if speed > speedlim:
+        scale = speedlim / speed
         boid.dx *= scale
         boid.dy *= scale
 
