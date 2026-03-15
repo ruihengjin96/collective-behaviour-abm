@@ -9,6 +9,7 @@ and this project adheres to Semantic Versioning.
 - ~~Add start, stop, close buttons (High)~~
 - ~~Add sliders for number of boids and predators (High)~~
 - ~~Add sliders for other parameters as appropriate (High)~~
+- Add widgets for customizing the width and height of the arena - for demonstrating with small number of boids (Mid)
 
 ### Model structure and logic
 - Make a pseudocode version of the model's logic and interaction rules (High)
