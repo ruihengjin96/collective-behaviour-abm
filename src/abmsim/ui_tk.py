@@ -118,7 +118,7 @@ def run():
         variable = flee_var
     ).pack() 
     
-    ###not working yet### Slider for agent speed limit 
+    # Slider for agent speed limit 
     speedlim_var = tk.DoubleVar(value = SPEED_LIMIT)
     tk.Label(ctrlpnl, text = "Speed limit").pack()
     tk.Scale(
@@ -151,10 +151,7 @@ def run():
     tk.Label(ctrlpnl, text = "Number of predators").pack()
     tk.Entry(ctrlpnl, textvariable = num_preds_var, width = 6).pack()
     tk.Button(ctrlpnl, text = "Apply population", command = apply_population_settings).pack()
-    
-    # Slider for
-    #TURN_FACTOR
-    
+      
     # Creating buttons for various functions
     
     tk.Button(ctrlpnl, text = "Start simulation", command = start_sim).pack()
