@@ -14,6 +14,7 @@ and this project adheres to Semantic Versioning.
 ### Model structure and logic
 - Make a pseudocode version of the model's logic and interaction rules (High)
 - Examine the rules and overall logic, and think about potential restructuring/reorganization of the model (High)
+- Rethink the file structure (e.g., how are interaction rules grouped into different files, and whether the file names are intuitive and good for building upon them in the future)
 
 ### Model functionalities
 - Write a function that runs headless simulation for specified number of runs and collects basic data of each agent (High)
