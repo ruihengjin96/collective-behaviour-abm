@@ -4,12 +4,18 @@ The format is based on Keep a Changelog,
 and this project adheres to Semantic Versioning.
 
 ## [To-Do List] (priority in parentheses)
-### Model functionalities
-- Write a function that runs headless simulation for specified number of runs and collects basic data of each agent (High)
 
 ### GUI and interactivity
-- Add start, stop, close buttons (High)
-- Add sliders for number of boids and predators (High)
+- ~~Add start, stop, close buttons (High)~~
+- ~~Add sliders for number of boids and predators (High)~~
+- ~~Add sliders for other parameters as appropriate (High)~~
+
+### Model structure and logic
+- Make a pseudocode version of the model's logic and interaction rules (High)
+- Examine the rules and overall logic, and think about potential restructuring/reorganization of the model (High)
+
+### Model functionalities
+- Write a function that runs headless simulation for specified number of runs and collects basic data of each agent (High)
 
 ### Naming things
 - Rename certain functions to make them more intuitive (Mid)
@@ -20,8 +26,15 @@ and this project adheres to Semantic Versioning.
 ### Changed
 ### Fixed
 
+## [0.0.1] - 2026-03-16
+- Added more interaction options in the interface
 
-## [0.1.0] - 2026-02-14
+### Added
+- Added 2 more sliders for interactive interface, for the global variables `CATCH_DIST` (the distance between a predator and a boid below which the boid is considered "eaten") and `SPEED_LIMIT` (speed limit for boids, although currently it affects boids and predators differently, which should be examined later) | The main changes are located in ui_tk.py, where tk variables are defined and passed onto `loop()` which contains `model.step()`, the main update function for the model
+- Added 2 input boxes for customizing numbers of boids and predators to be initiated, and a button to apply the newly entered values.
+- Added buttons for starting and stopping the simulation, and for resetting the arena. 
+
+## [0.0.0] - 2026-02-14
 - Model now functions the same as the previous single-file model
 
 ### Added
