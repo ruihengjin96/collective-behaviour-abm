@@ -1,7 +1,7 @@
 # abmsim/model.py
 import random
 from abmsim.agents import Boid, Predator
-from abmsim.config import NUM_BOIDS, NUM_PREDS, WIDTH, HEIGHT, DFLT_AVOID_DIST
+import abmsim.config as config
 from abmsim.rules.boid_rules import (
     avoid_others, match_velocity, is_eaten, detect_preds, flee
 )
@@ -16,22 +16,22 @@ class Model:
         self.predators = []
 
     def init_boids(self):
-        for _ in range(NUM_BOIDS):
+        for _ in range(config.NUM_BOIDS):
             self.boids.append(
                 Boid(
-                    random.uniform(100, WIDTH - 100),
-                    random.uniform(100, HEIGHT - 100),
+                    random.uniform(100, config.WIDTH - 100),
+                    random.uniform(100, config.HEIGHT - 100),
                     random.uniform(-5, 5),
                     random.uniform(-5, 5),
                 )
             )
 
     def init_predators(self):
-        for _ in range(NUM_PREDS):
+        for _ in range(config.NUM_PREDS):
             self.predators.append(
                 Predator(
-                    random.uniform(0, WIDTH),
-                    random.uniform(0, HEIGHT),
+                    random.uniform(0, config.WIDTH),
+                    random.uniform(0, config.HEIGHT),
                     random.uniform(-3, 3),
                     random.uniform(-3, 3),
                 )
@@ -55,8 +55,8 @@ class Model:
                 avoid_others(b, self.boids, avoid_dist)
                 match_velocity(b, self.boids)
             limit_speed(b, speedlim)
-            b.x = (b.x + b.dx) % WIDTH
-            b.y = (b.y + b.dy) % HEIGHT
+            b.x = (b.x + b.dx) % config.WIDTH
+            b.y = (b.y + b.dy) % config.HEIGHT
 
         # predator interaction rules
         for p in self.predators:
@@ -86,8 +86,8 @@ class Model:
                 else:
                     wander(p)
             limit_speed(p, speedlim)
-            p.x = (p.x + p.dx) % WIDTH
-            p.y = (p.y + p.dy) % HEIGHT
+            p.x = (p.x + p.dx) % config.WIDTH
+            p.y = (p.y + p.dy) % config.HEIGHT
     
     def clear(self):
         self.boids.clear()

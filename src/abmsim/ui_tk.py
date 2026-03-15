@@ -2,6 +2,7 @@
 import tkinter as tk
 import math
 from abmsim.model import Model
+import abmsim.config as config
 from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST, REFUGE_R, REFUGE_CX, REFUGE_CY, SPEED_LIMIT, CATCH_DIST
 
 
@@ -67,12 +68,30 @@ def run():
                 canvas.after_cancel(running["id"])
                 running["id"] = None
     
+    def apply_population_settings():
+          try:
+                new_boids = int(num_boids_var.get())
+                new_preds = int(num_preds_var.get())
+          except ValueError:
+                return
+          if new_boids < 0:
+                new_boids = 0
+          if new_preds < 0:
+                new_preds = 0
+          config.NUM_BOIDS = new_boids
+          config.NUM_PREDS = new_preds
+
     def reset_arena():
           stop_sim()
+          apply_population_settings()
           model.clear()
           model.init_boids()
           canvas.delete("agents")
           #draw()
+
+    def release_predators():
+          apply_population_settings()
+          model.init_predators()
     
 #------ Widgets for interface ------#    
     # Creating a slider for the distance threshold for repulsion between boids
@@ -123,6 +142,15 @@ def run():
         variable = catch_dist_var
     ).pack()
     
+    # Input boxes for population sizes
+    num_boids_var = tk.StringVar(value=str(config.NUM_BOIDS))
+    tk.Label(ctrlpnl, text = "Number of boids").pack()
+    tk.Entry(ctrlpnl, textvariable = num_boids_var, width = 6).pack()
+    
+    num_preds_var = tk.StringVar(value=str(config.NUM_PREDS))
+    tk.Label(ctrlpnl, text = "Number of predators").pack()
+    tk.Entry(ctrlpnl, textvariable = num_preds_var, width = 6).pack()
+    tk.Button(ctrlpnl, text = "Apply population", command = apply_population_settings).pack()
     
     # Slider for
     #TURN_FACTOR
@@ -133,7 +161,7 @@ def run():
     tk.Button(ctrlpnl, text = "Stop simulation", command = stop_sim).pack()
     tk.Button(ctrlpnl, text = "Reset arena", command = reset_arena).pack()
     #tk.Button(ctrlpnl, text = "Close model", command = model.init_predators).pack()
-    tk.Button(ctrlpnl, text = "Release predators", command = model.init_predators).pack()  
+    tk.Button(ctrlpnl, text = "Release predators", command = release_predators).pack()  
 #------ End of widgets ------#  
 
     root.mainloop()
