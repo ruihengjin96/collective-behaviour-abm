@@ -4,6 +4,8 @@ The format is based on Keep a Changelog,
 and this project adheres to Semantic Versioning.
 
 ## [To-Do List] (priority in parentheses)
+### Organisation
+- add install_requires to setup file
 
 ### GUI and interactivity
 - ~~Add start, stop, close buttons (High)~~
