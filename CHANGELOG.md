@@ -3,15 +3,19 @@ All notable changes to this project will be documented in this file.
 The format is based on Keep a Changelog,
 and this project adheres to Semantic Versioning.
 
-## [To-Do List] (priority in parentheses)
+## [To-Do List] (Priority, Difficulty)
 
 ### GUI and interactivity
 - ~~Add start, stop, close buttons (High)~~
 - ~~Add sliders for number of boids and predators (High)~~
 - ~~Add sliders for other parameters as appropriate (High)~~
-- Add widgets for customizing the width and height of the arena - for demonstrating with small number of boids (Mid)
+- **Make the size of the window dynamic. (Mid, Mid)**
+- **Rearrange the order of widgets and separate the widgets more clearly (Mid, Low)**
+
 
 ### Model structure and logic
+- **Disable refuge geometry for now (High, Low)**
+- **Write a random movement rule, test it with one agent (High, High)**
 - Make a pseudocode version of the model's logic and interaction rules (High)
 - Examine the rules and overall logic, and think about potential restructuring/reorganization of the model (High)
 - Rethink the file structure (e.g., how are interaction rules grouped into different files, and whether the file names are intuitive and good for building upon them in the future)
