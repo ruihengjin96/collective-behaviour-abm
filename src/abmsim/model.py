@@ -65,7 +65,7 @@ class Model:
             prey_detected = check_prey(p, self.boids)
             signal_detected = check_signal(p, self.predators)
             pred_avoid = pred_repel_check(p, self.predators)
-            keep_away_refuge(p, cref)
+            #keep_away_refuge(p, cref)
             if prey_detected:
                 p.signal_state = "on"
                 hunt(p, self.boids)

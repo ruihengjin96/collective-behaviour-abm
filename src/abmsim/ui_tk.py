@@ -22,14 +22,14 @@ def run():
     canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
     canvas.pack()
     
-    # Drawing the circular refuge area
-    canvas.create_oval(
-          REFUGE_CX - REFUGE_R,
-          REFUGE_CY - REFUGE_R, 
-          REFUGE_CX + REFUGE_R, 
-          REFUGE_CY + REFUGE_R,
-          outline = "white", fill = "#e6f5f4", tags = "refuge"          
-    )
+    # Drawing the circular refuge area (Disabled for now)
+    #canvas.create_oval(
+    #      REFUGE_CX - REFUGE_R,
+    #      REFUGE_CY - REFUGE_R, 
+    #      REFUGE_CX + REFUGE_R, 
+    #      REFUGE_CY + REFUGE_R,
+    #      outline = "white", fill = "#e6f5f4", tags = "refuge"          
+    #)
     
     running = {"id": None} 
     
