@@ -14,7 +14,7 @@ and this project adheres to Semantic Versioning.
 
 
 ### Model structure and logic
-- **Disable refuge geometry for now (High, Low)**
+- ~~Disable refuge geometry for now (High, Low)~~
 - **Write a random movement rule, test it with one agent (High, High)**
 - Make a pseudocode version of the model's logic and interaction rules (High)
 - Examine the rules and overall logic, and think about potential restructuring/reorganization of the model (High)
