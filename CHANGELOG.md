@@ -9,8 +9,9 @@ and this project adheres to Semantic Versioning.
 - ~~Add start, stop, close buttons (High)~~
 - ~~Add sliders for number of boids and predators (High)~~
 - ~~Add sliders for other parameters as appropriate (High)~~
+- ~~Add an exit button to terminate the application (High, Low)~~
 - **Make the size of the window dynamic. (Mid, Mid)**
-- **Rearrange the order of widgets and separate the widgets more clearly (Mid, Low)**
+- ~~Rearrange the order of widgets and separate the widgets more clearly (Mid, Low)~~
 
 
 ### Model structure and logic
