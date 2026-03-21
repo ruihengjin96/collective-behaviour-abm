@@ -20,7 +20,7 @@ def run():
     
     # Creating arena
     canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
-    canvas.pack()
+    canvas.pack(anchor=tk.W)
     
     # Drawing the circular refuge area (Disabled for now)
     #canvas.create_oval(
@@ -94,9 +94,20 @@ def run():
           model.init_predators()
     
 #------ Widgets for interface ------#    
+    # Input boxes for population sizes
+    num_boids_var = tk.StringVar(value=str(config.NUM_BOIDS))
+    tk.Label(ctrlpnl, text = "N Boids (max 200)").pack(anchor=tk.W)
+    tk.Entry(ctrlpnl, textvariable = num_boids_var, width = 6).pack()
+    
+    num_preds_var = tk.StringVar(value=str(config.NUM_PREDS))
+    tk.Label(ctrlpnl, text = "N Predators").pack(anchor=tk.W)
+    tk.Entry(ctrlpnl, textvariable = num_preds_var, width = 6).pack()
+    tk.Button(ctrlpnl, text = "Apply above settings", command = apply_population_settings).pack(anchor=tk.W)
+    tk.Frame(ctrlpnl, height=1, bg="gray").pack(fill=tk.X, padx=10, pady=5)
+
     # Creating a slider for the distance threshold for repulsion between boids
     avoid_var = tk.DoubleVar(value=DFLT_AVOID_DIST)
-    tk.Label(ctrlpnl, text = "Boid avoid distance").pack()
+    tk.Label(ctrlpnl, text = "Boid avoid distance").pack(anchor=tk.W)
     tk.Scale(
         ctrlpnl,
         from_=5,
@@ -104,11 +115,12 @@ def run():
         resolution = 1,
         orient = tk.HORIZONTAL,
         variable = avoid_var
-    ).pack()  
+    ).pack(anchor=tk.W)  
+    tk.Frame(ctrlpnl, height=1, bg="gray").pack(fill=tk.X, padx=10, pady=5)
       
     # Creating a slider for the distance threshold at which boids start fleeing from predators
     flee_var = tk.DoubleVar(value=DFLT_FLEE_DIST)
-    tk.Label(ctrlpnl, text = "Boid flee distance").pack()
+    tk.Label(ctrlpnl, text = "Boid flee distance").pack(anchor=tk.W)
     tk.Scale(
         ctrlpnl,
         from_=50,
@@ -116,11 +128,12 @@ def run():
         resolution = 5,
         orient = tk.HORIZONTAL,
         variable = flee_var
-    ).pack() 
+    ).pack(anchor=tk.W) 
+    tk.Frame(ctrlpnl, height=1, bg="gray").pack(fill=tk.X, padx=10, pady=5)
     
     # Slider for agent speed limit 
     speedlim_var = tk.DoubleVar(value = SPEED_LIMIT)
-    tk.Label(ctrlpnl, text = "Speed limit").pack()
+    tk.Label(ctrlpnl, text = "Speed limit").pack(anchor=tk.W)
     tk.Scale(
         ctrlpnl, 
         from_ = 1, 
@@ -128,11 +141,12 @@ def run():
         resolution = 1, 
         orient = tk.HORIZONTAL, 
         variable = speedlim_var
-    ).pack()
+    ).pack(anchor=tk.W)
+    tk.Frame(ctrlpnl, height=1, bg="gray").pack(fill=tk.X, padx=10, pady=5)
     
     # Slider for catch distance
     catch_dist_var = tk.DoubleVar(value = CATCH_DIST)
-    tk.Label(ctrlpnl, text = "Catch distance").pack()
+    tk.Label(ctrlpnl, text = "Catch distance").pack(anchor=tk.W)
     tk.Scale(
         ctrlpnl, 
         from_ = 10, 
@@ -140,25 +154,17 @@ def run():
         resolution = 5, 
         orient = tk.HORIZONTAL, 
         variable = catch_dist_var
-    ).pack()
-    
-    # Input boxes for population sizes
-    num_boids_var = tk.StringVar(value=str(config.NUM_BOIDS))
-    tk.Label(ctrlpnl, text = "Number of boids").pack()
-    tk.Entry(ctrlpnl, textvariable = num_boids_var, width = 6).pack()
-    
-    num_preds_var = tk.StringVar(value=str(config.NUM_PREDS))
-    tk.Label(ctrlpnl, text = "Number of predators").pack()
-    tk.Entry(ctrlpnl, textvariable = num_preds_var, width = 6).pack()
-    tk.Button(ctrlpnl, text = "Apply population", command = apply_population_settings).pack()
-      
+    ).pack(anchor=tk.W)
+    tk.Frame(ctrlpnl, height=1, bg="gray").pack(fill=tk.X, padx=10, pady=5)
+          
     # Creating buttons for various functions
     
-    tk.Button(ctrlpnl, text = "Start simulation", command = start_sim).pack()
-    tk.Button(ctrlpnl, text = "Stop simulation", command = stop_sim).pack()
-    tk.Button(ctrlpnl, text = "Reset arena", command = reset_arena).pack()
-    #tk.Button(ctrlpnl, text = "Close model", command = model.init_predators).pack()
-    tk.Button(ctrlpnl, text = "Release predators", command = release_predators).pack()  
+    tk.Button(ctrlpnl, text = "Start simulation", command = start_sim).pack(anchor=tk.W)
+    tk.Button(ctrlpnl, text = "Pause simulation", command = stop_sim).pack(anchor=tk.W)
+    tk.Button(ctrlpnl, text = "Reset arena", command = reset_arena).pack(anchor=tk.W)
+    #tk.Button(ctrlpnl, text = "Close model", command = model.init_predators).pack(anchor=tk.W)
+    tk.Button(ctrlpnl, text = "Release predators", command = release_predators).pack(anchor=tk.W)
+    tk.Button(ctrlpnl, text="Exit", command=root.quit).pack(anchor=tk.W)      
 #------ End of widgets ------#  
 
     root.mainloop()
