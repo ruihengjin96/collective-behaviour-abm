@@ -33,6 +33,16 @@ and this project adheres to Semantic Versioning.
 ### Changed
 ### Fixed
 
+
+## [0.0.2] - 2026-03-23
+### Added
+- Added an exit button to terminate the application
+### Changed
+- Rearranged the order of widgets and separate the widgets more clearly
+- Disabled refuge geometry for now 
+### Fixed
+- N/A
+
 ## [0.0.1] - 2026-03-16
 - Added more interaction options in the interface
 
