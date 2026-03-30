@@ -8,7 +8,7 @@ from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST, REFUGE
 
 def run():
     model = Model()
-    model.init_boids()
+    model.init_agents('Boid', config.NUM_BOIDS) # the first argument needs to be a string, i.e. quotation marks needed
     # model.init_predators() # commented out so as to not release predators until button is pressed
 
     root = tk.Tk()
@@ -85,13 +85,13 @@ def run():
           stop_sim()
           apply_population_settings()
           model.clear()
-          model.init_boids()
+          model.init_agents('Boid', config.NUM_BOIDS)
           canvas.delete("agents")
           #draw()
 
     def release_predators():
           apply_population_settings()
-          model.init_predators()
+          model.init_agents('Predator', config.NUM_PREDS)
     
 #------ Widgets for interface ------#    
     # Input boxes for population sizes

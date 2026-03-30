@@ -17,43 +17,33 @@ class Model:
 
     def init_agents(self, agent_type, n):
         agent_config = {
-            'boid': {
+            'Boid': {
                 'class': Boid,
                 'list': self.boids,
                 'x_bounds': (100, config.WIDTH - 100),
                 'y_bounds': (100, config.HEIGHT - 100),
-                'dx_bounds': (-5, 5)
+                'dx_bounds': (-5, 5),
                 'dy_bounds': (-5, 5),
             },
-            'predator': {
+            'Predator': {
                 'class': Predator,
                 'list': self.predators,
                 'x_bounds': (0, config.WIDTH),
                 'y_bounds': (0, config.HEIGHT),
-                'dx_bounds': (-3, 3)
+                'dx_bounds': (-3, 3),
                 'dy_bounds': (-3, 3),
             }
         }
-
-    def init_boids(self):
-        for _ in range(config.NUM_BOIDS):
-            self.boids.append(
-                Boid(
-                    random.uniform(100, config.WIDTH - 100),
-                    random.uniform(100, config.HEIGHT - 100),
-                    random.uniform(-5, 5),
-                    random.uniform(-5, 5),
-                )
-            )
-
-    def init_predators(self):
-        for _ in range(config.NUM_PREDS):
-            self.predators.append(
-                Predator(
-                    random.uniform(0, config.WIDTH),
-                    random.uniform(0, config.HEIGHT),
-                    random.uniform(-3, 3),
-                    random.uniform(-3, 3),
+        if agent_type not in agent_config:
+            raise ValueError(f"Unknown agent type: {agent_type}.")
+        cfg = agent_config[agent_type]
+        for _ in range(n):
+            cfg['list'].append(
+                cfg['class'](
+                    random.uniform(cfg['x_bounds'][0], cfg['x_bounds'][1]),
+                    random.uniform(cfg['y_bounds'][0], cfg['y_bounds'][1]),
+                    random.uniform(cfg['dx_bounds'][0], cfg['dx_bounds'][1]),
+                    random.uniform(cfg['dy_bounds'][0], cfg['dy_bounds'][1])
                 )
             )
 
