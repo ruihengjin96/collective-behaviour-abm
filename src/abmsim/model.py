@@ -15,6 +15,26 @@ class Model:
         self.boids = []
         self.predators = []
 
+    def init_agents(self, agent_type, n):
+        agent_config = {
+            'boid': {
+                'class': Boid,
+                'list': self.boids,
+                'x_bounds': (100, config.WIDTH - 100),
+                'y_bounds': (100, config.HEIGHT - 100),
+                'dx_bounds': (-5, 5)
+                'dy_bounds': (-5, 5),
+            },
+            'predator': {
+                'class': Predator,
+                'list': self.predators,
+                'x_bounds': (0, config.WIDTH),
+                'y_bounds': (0, config.HEIGHT),
+                'dx_bounds': (-3, 3)
+                'dy_bounds': (-3, 3),
+            }
+        }
+
     def init_boids(self):
         for _ in range(config.NUM_BOIDS):
             self.boids.append(
