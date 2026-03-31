@@ -1,9 +1,41 @@
-# -------------------------------
-# BOID RULES
-# -------------------------------
 import math
 from abmsim.config import SPEED_LIMIT, FLEE_FACTOR, AVOID_FACTOR, BOID_VIS_RANGE, MATCHING_FACTOR, CATCH_DIST
 
+# -------------------------------
+# Boid social rules
+# -------------------------------
+def avoid_others(boid, boids, avoid_dist):
+    move_x = 0
+    move_y = 0
+
+    for other in boids:
+        if boid != other and boid.distance(other) < avoid_dist:
+            move_x += boid.x - other.x
+            move_y += boid.y - other.y
+
+    boid.dx += move_x * AVOID_FACTOR
+    boid.dy += move_y * AVOID_FACTOR
+
+def match_velocity(boid, neighbors):
+    avg_dx = 0
+    avg_dy = 0
+    num_neighbors = 0
+
+    for other in neighbors:
+        if boid != other and boid.distance(other) < BOID_VIS_RANGE:
+            avg_dx += other.dx
+            avg_dy += other.dy
+            num_neighbors += 1
+
+    if num_neighbors:
+        avg_dx /= num_neighbors
+        avg_dy /= num_neighbors
+        boid.dx += (avg_dx - boid.dx) * MATCHING_FACTOR
+        boid.dy += (avg_dy - boid.dy) * MATCHING_FACTOR
+
+# -------------------------------
+# Predator avoidance related rules
+# -------------------------------
 def detect_preds(boid, preds, flee_dist):
     close_preds = [p for p in preds if boid.distance(p) < flee_dist]
     if close_preds:
@@ -35,35 +67,6 @@ def flee(boid, preds, flee_dist):
     STEER_ALPHA = 0.15
     boid.dx += (desired_dx - boid.dx) * STEER_ALPHA * FLEE_FACTOR
     boid.dy += (desired_dy - boid.dy) * STEER_ALPHA * FLEE_FACTOR
-
-def avoid_others(boid, boids, avoid_dist):
-    move_x = 0
-    move_y = 0
-
-    for other in boids:
-        if boid != other and boid.distance(other) < avoid_dist:
-            move_x += boid.x - other.x
-            move_y += boid.y - other.y
-
-    boid.dx += move_x * AVOID_FACTOR
-    boid.dy += move_y * AVOID_FACTOR
-
-def match_velocity(boid, neighbors):
-    avg_dx = 0
-    avg_dy = 0
-    num_neighbors = 0
-
-    for other in neighbors:
-        if boid != other and boid.distance(other) < BOID_VIS_RANGE:
-            avg_dx += other.dx
-            avg_dy += other.dy
-            num_neighbors += 1
-
-    if num_neighbors:
-        avg_dx /= num_neighbors
-        avg_dy /= num_neighbors
-        boid.dx += (avg_dx - boid.dx) * MATCHING_FACTOR
-        boid.dy += (avg_dy - boid.dy) * MATCHING_FACTOR
 
 def is_eaten(boid, predators, catch_dist):
     for pred in predators:
