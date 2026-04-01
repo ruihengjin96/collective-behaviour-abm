@@ -77,7 +77,6 @@ class Predator(Boid):
         self.signal_timer = 0
         self.signal_pos = []
         self.signal_response_strength = 0.02
-        self.max_turn_wander = math.pi * 0.1
         self.max_turn = math.pi * 0.15
         self.repel_dist_wander = HUNTING_SIGHT
         self.repel_dist_hunt = HUNTING_SIGHT*2
@@ -96,13 +95,13 @@ class Predator(Boid):
         canvas.create_polygon([p1, p2, p3], fill="#d94b4b", outline="", tags = "agents")
         
         # draw signal halo if signal on
-        if self.signal_timer > 0:
-            radius = HUNTING_SIGHT
-            alpha = int(255 * (self.signal_timer /10)) # fade out over 10 frames???
-            canvas.create_oval(
-                x - radius, y - radius,
-                x + radius, y + radius,
-                outline = "yellow", width = 2,
-                tags = "agents"
-            )        
-            self.signal_timer -= 1
+        #if self.signal_timer > 0:
+        #    radius = HUNTING_SIGHT
+        #    alpha = int(255 * (self.signal_timer /10)) # fade out over 10 frames???
+        #    canvas.create_oval(
+        #        x - radius, y - radius,
+        #        x + radius, y + radius,
+        #        outline = "yellow", width = 2,
+        #        tags = "agents"
+        #    )        
+        #    self.signal_timer -= 1
