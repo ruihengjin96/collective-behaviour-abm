@@ -46,5 +46,6 @@ REFUGE_BUFFER = 50
 # These parameters control which behavior rules will be applied
 
 ENABLE_SOCIAL = True                # Boid social rules (centering, avoidance, velocity matching)
+ENABLE_CLASS_DIFF = True            # If false, all agent-types have the same behavioural rules
 ENABLE_PREDATION = True             # Predation system (hunting, fleeing, prey detection) -- design note: if FALSE, predators would behave just like boids
 # ENABLE_SIGNALING = True             # Predator signaling (predators communicate with each other) -- excluded as it's messy as is and not necessary for a core model
