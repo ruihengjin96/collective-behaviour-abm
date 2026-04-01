@@ -1,8 +1,31 @@
 import math
-from abmsim.config import SPEED_LIMIT, FLEE_FACTOR, AVOID_FACTOR, BOID_VIS_RANGE, MATCHING_FACTOR, CATCH_DIST
+from abmsim.config import SPEED_LIMIT, FLEE_FACTOR, AVOID_FACTOR, BOID_VIS_RANGE, MATCHING_FACTOR, CATCH_DIST, TURN_FACTOR, MARGIN, WIDTH, HEIGHT, SPEED_LIMIT
 
 # -------------------------------
-# Boid social rules
+# Movement rules
+# -------------------------------
+def wander(boid):
+    return
+
+def limit_speed(boid, speedlim):
+    speed = math.hypot(boid.dx, boid.dy)
+    if speed > speedlim:
+        scale = speedlim / speed
+        boid.dx *= scale
+        boid.dy *= scale
+
+def keep_within_bounds(boid): # I don't think it's currently used
+    if boid.x < MARGIN:
+        boid.dx += TURN_FACTOR
+    if boid.x > WIDTH - MARGIN:
+        boid.dx -= TURN_FACTOR
+    if boid.y < MARGIN:
+        boid.dy += TURN_FACTOR
+    if boid.y > HEIGHT - MARGIN:
+        boid.dy -= TURN_FACTOR
+
+# -------------------------------
+# Agent social rules
 # -------------------------------
 def avoid_others(boid, boids, avoid_dist):
     move_x = 0
@@ -32,6 +55,23 @@ def match_velocity(boid, neighbors):
         avg_dy /= num_neighbors
         boid.dx += (avg_dx - boid.dx) * MATCHING_FACTOR
         boid.dy += (avg_dy - boid.dy) * MATCHING_FACTOR
+
+def move_toward_center(agent, others): # used by both boids and predators
+    center_x = 0
+    center_y = 0
+    num_neighbors = 0
+
+    for other in others:
+        if agent != other and agent.distance(other) < agent.cohesion_visual_range and agent.angle(other) <= agent.fov/2:
+            center_x += other.x
+            center_y += other.y
+            num_neighbors += 1
+
+    if num_neighbors:
+        center_x /= num_neighbors
+        center_y /= num_neighbors
+        agent.dx += (center_x - agent.x) * agent.centering_factor
+        agent.dy += (center_y - agent.y) * agent.centering_factor
 
 # -------------------------------
 # Predator avoidance related rules
@@ -73,3 +113,5 @@ def is_eaten(boid, predators, catch_dist):
         if boid.distance(pred) < catch_dist:
             return True
     return False
+
+

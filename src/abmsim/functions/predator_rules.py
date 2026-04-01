@@ -5,6 +5,7 @@ import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
 
+"""Staying away from refuge"""
 def keep_away_refuge(pred, cref):
     dist_to_c = pred.distance(cref)
     if dist_to_c == 0:
@@ -19,7 +20,8 @@ def keep_away_refuge(pred, cref):
     pred.dx += ux * cref.repel
     pred.dy += uy * cref.repel
 
-"""Rule 1: Stay at a distance from other predators"""
+# --------------------------------
+"""Detecting and hunting prey"""
 def check_prey(pred, boids):
     nearby_boids = [b for b in boids if pred.distance(b) <= HUNTING_SIGHT]
     """More explicit way:
@@ -35,17 +37,26 @@ def check_prey(pred, boids):
     else:
         pred.signal_state = "off"
         return False
-        
 
-def check_signal(pred, preds):
-    signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
-    if signal_preds:
-        pred.signal_pos = (signal_preds[0].x, signal_preds[0].y)
-        pred.signal_state = "on"
-        return True
-    else:
-        pred.signal_pos = []
-        return False
+def hunt(pred, boids):
+    # 1. Find all boids within the hunting sight
+    close_boids = [b for b in boids if pred.distance(b) < HUNTING_SIGHT]
+    if not close_boids:
+        return
+    
+    # 2. Find the centroid of the boids
+    avg_x = sum(b.x for b in close_boids) / len(close_boids)        
+    avg_y = sum(b.y for b in close_boids) / len(close_boids)
+    
+    # 3. Compute the difference b/n boid position and predator position
+    move_x = avg_x - pred.x
+    move_y = avg_y - pred.y
+    
+    # 4. Predator move toward nearest boid
+    pred.dx += move_x * 0.02 
+    pred.dy += move_y * 0.02
+    """Note: should parameterize this factor"""
+# --------------------------------       
 
 def wander(pred):
     delta_head = random.uniform(-pred.max_turn_wander, pred.max_turn_wander) 
@@ -53,6 +64,8 @@ def wander(pred):
     pred.dx = pred.speed * math.cos(pred.head)
     pred.dy = pred.speed * math.sin(pred.head)
 
+# --------------------------------
+"""Different repulsion factors depending on if in hunt mode"""
 def pred_repel_check(pred, preds):
     repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
     repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
@@ -79,8 +92,20 @@ def pred_repel_hunt(pred, preds):
         movey += pred.y - other.y
 
     pred.dx += movex * PRED_REP_HUNT_FACTOR
-    pred.dy += movey * PRED_REP_HUNT_FACTOR
-    
+    pred.dy += movey * PRED_REP_HUNT_FACTOR    
+
+# --------------------------------
+"""Extra signaling related rules that could be excluded for the core model"""
+def check_signal(pred, preds):
+    signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
+    if signal_preds:
+        pred.signal_pos = (signal_preds[0].x, signal_preds[0].y)
+        pred.signal_state = "on"
+        return True
+    else:
+        pred.signal_pos = []
+        return False
+
 def move_toward_signal(pred):
     if not pred.signal_pos:
         return  # no signal to respond to
@@ -98,24 +123,3 @@ def move_toward_signal(pred):
     # Update heading and speed if needed
     pred.head = math.atan2(pred.dy, pred.dx)
     pred.speed = math.hypot(pred.dx, pred.dy)
-    
-
-"""Rule 2: Move toward the centroid of boids within hunting sight"""
-def hunt(pred, boids):
-    # 1. Find all boids within the hunting sight
-    close_boids = [b for b in boids if pred.distance(b) < HUNTING_SIGHT]
-    if not close_boids:
-        return
-    
-    # 2. Find the centroid of the boids
-    avg_x = sum(b.x for b in close_boids) / len(close_boids)        
-    avg_y = sum(b.y for b in close_boids) / len(close_boids)
-    
-    # 3. Compute the difference b/n boid position and predator position
-    move_x = avg_x - pred.x
-    move_y = avg_y - pred.y
-    
-    # 4. Predator move toward nearest boid
-    pred.dx += move_x * 0.02 
-    pred.dy += move_y * 0.02
-    """Note: should parameterize this factor"""

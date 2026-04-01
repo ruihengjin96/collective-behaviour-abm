@@ -2,16 +2,26 @@
 import random
 from abmsim.agents import Boid, Predator
 import abmsim.config as config
-from abmsim.rules.boid_rules import (
-    avoid_others, match_velocity, is_eaten, detect_preds, flee
+from abmsim.functions.agent_rules import (
+    avoid_others, match_velocity, is_eaten, detect_preds, flee, limit_speed, move_toward_center
 )
-from abmsim.rules.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
-from abmsim.rules.shared_rules import (limit_speed, move_toward_center)
+from abmsim.functions.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
 from abmsim.environment import cref
 
 
 class Model:
-    def __init__(self):
+    def __init__(self,
+                 n_boids = None,
+                 n_preds = None,
+                 enable_social = None,
+                 enable_classdiff = None,
+                 enable_predation = None):
+        self.n_boids = n_boids if n_boids is not None else config.NUM_BOIDS
+        self.n_preds = n_preds if n_preds is not None else config.NUM_PREDS
+        self.enable_social = enable_social if enable_social is not None else config.ENABLE_SOCIAL
+        self.enable_classdiff = enable_classdiff if enable_classdiff is not None else config.ENABLE_CLASS_DIFF
+        self.enable_predation = enable_predation if enable_predation is not None else config.ENABLE_PREDATION
+        
         self.boids = []
         self.predators = []
 
@@ -47,6 +57,26 @@ class Model:
                 )
             )
 
+    def compile_rules(self):
+        self.active_boid_rules = ["wander"] #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
+        self.active_pred_rules = ["wander"]
+        
+        # BOID RULES
+        if self.enable_social:
+            self.active_boid_rules.append("agent social rules") #Q: how do I group the rules in the rule scripts and then pass one string here to append all the relevant rules?""" 
+        if self.enable_predation:
+            self.active_boid_rules.append("pred avoid rules")
+        
+        # PREDATOR RULES
+        if self.enable_classdiff is False:
+            self.active_pred_rules.append("agent social rules")
+        else:
+            self.active_pred_rules.append("pred social rules")
+        if self.enable_predation:
+            self.active_pred_rules.append("predation rules")
+        
+        
+    
     def step(self, avoid_dist, flee_dist, catch_dist, speedlim):
         # remove eaten boids
         eaten_boids = []
