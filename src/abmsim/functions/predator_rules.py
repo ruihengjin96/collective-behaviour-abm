@@ -5,23 +5,6 @@ from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_w
 # -------------------------------
 # RULE REGISTRY
 # -------------------------------
-predator_rule_groups = {
-    'pred movement rules': ['wander', 'limit_speed', 'keep_within_bounds'],
-    'pred social rules': ['move_toward_center', 'pred_repel_check', 'pred_repel_wander', 'pred_repel_hunt'], # Need to simplify, one repel rule is sufficient
-    'predation rules': ['check_prey', 'hunt']
-}
-
-predator_rule_names = {
-    'wander': wander,
-    'limit_speed': limit_speed,
-    'move_toward_center': move_toward_center,
-    'keep_within_bounds': keep_within_bounds,
-    'pred_repel_check': pred_repel_check,
-    'pred_repel_wander': pred_repel_wander,
-    'pred_repel_hunt': pred_repel_hunt,
-    'check_prey': check_prey,
-    'hunt': hunt,
-}
 
 def get_pred_rules(rule_names):
     result = []
@@ -45,24 +28,14 @@ def get_pred_rules(rule_names):
 # -------------------------------
 # PREDATOR SOCIAL RULES
 # -------------------------------"
-def pred_repel_check(pred, preds):
-    repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
+"""
+def pred_repel_check(pred, preds): # will disable it soon
+    repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist]
     repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
     
     return [len(repel_wander)>0, len(repel_hunt)>0]
 
-def pred_repel_wander(pred, preds):
-    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
-    movex = 0
-    movey = 0
-    for other in nearby_other_preds:
-        movex += pred.x - other.x
-        movey += pred.y - other.y
-
-    pred.dx += movex * PRED_REP_WANDER_FACTOR
-    pred.dy += movey * PRED_REP_WANDER_FACTOR
-
-def pred_repel_hunt(pred, preds):
+def pred_repel_hunt(pred, preds): # will disable it soon
     nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
     movex = 0
     movey = 0
@@ -72,6 +45,19 @@ def pred_repel_hunt(pred, preds):
 
     pred.dx += movex * PRED_REP_HUNT_FACTOR
     pred.dy += movey * PRED_REP_HUNT_FACTOR    
+"""
+
+def pred_avoid_others(pred, preds):
+    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist]
+    movex = 0
+    movey = 0
+    for other in nearby_other_preds:
+        movex += pred.x - other.x
+        movey += pred.y - other.y
+
+    pred.dx += movex * PRED_REP_WANDER_FACTOR
+    pred.dy += movey * PRED_REP_WANDER_FACTOR
+
 
 # -------------------------------
 # PREDATION RULES
@@ -112,9 +98,10 @@ def hunt(pred, boids):
     """Note: should parameterize this factor"""
 
 # -------------------------------
-# HUNTING SIGNALING RULES
+# HUNTING SIGNALING RULES -- disabled for now
 # -------------------------------
 """Extra signaling related rules that could be excluded for the core model"""
+"""
 def check_signal(pred, preds):
     signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
     if signal_preds:
@@ -142,6 +129,7 @@ def move_toward_signal(pred):
     # Update heading and speed if needed
     pred.head = math.atan2(pred.dy, pred.dx)
     pred.speed = math.hypot(pred.dx, pred.dy)
+"""
 
 # -------------------------------
 # Refuge related rules
@@ -161,3 +149,17 @@ def keep_away_refuge(pred, cref):
     pred.dx += ux * cref.repel
     pred.dy += uy * cref.repel
 
+predator_rule_groups = {
+    'pred movement rules': ['wander'],
+    'pred social rules': ['move_toward_center', 'pred_repel_check', 'pred_avoid_others', 'pred_repel_hunt'], # Need to simplify, one repel rule is sufficient
+    'predation rules': ['check_prey', 'hunt']
+}
+
+predator_rule_names = {
+    'wander': wander,
+    'move_toward_center': move_toward_center,
+    'keep_within_bounds': keep_within_bounds,
+    'pred_avoid_others': pred_avoid_others,
+    'check_prey': check_prey,
+    'hunt': hunt,
+}

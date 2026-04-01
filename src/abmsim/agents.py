@@ -3,7 +3,7 @@ import numpy as np
 """
 Figure out how to import parameters from config and what parameters are needed
 """
-from abmsim.config import BOID_VIS_RANGE, BOID_CENTERING_FACTOR, HUNTING_SIGHT, PRED_COHESION_VIS_RANGE, PRED_CENTERING_FACTOR
+from abmsim.config import BOID_VIS_RANGE, BOID_CENTERING_FACTOR, HUNTING_SIGHT, PRED_COHESION_VIS_RANGE, PRED_CENTERING_FACTOR, DFLT_PRED_AVOID_DIST
 
 
 # -------------------------------
@@ -78,7 +78,7 @@ class Predator(Boid):
         self.signal_pos = []
         self.signal_response_strength = 0.02
         self.max_turn = math.pi * 0.15
-        self.repel_dist_wander = HUNTING_SIGHT
+        self.repel_dist = DFLT_PRED_AVOID_DIST
         self.repel_dist_hunt = HUNTING_SIGHT*2
         self.cohesion_visual_range = PRED_COHESION_VIS_RANGE
         self.centering_factor = PRED_CENTERING_FACTOR

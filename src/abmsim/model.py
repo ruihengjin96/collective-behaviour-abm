@@ -5,7 +5,7 @@ import abmsim.config as config
 from abmsim.functions.agent_rules import (
     get_agent_rules, avoid_others, match_velocity, is_eaten, detect_preds, flee, limit_speed, move_toward_center
 )
-from abmsim.functions.predator_rules import (get_pred_rules, hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
+from abmsim.functions.predator_rules import (get_pred_rules, hunt, check_prey, pred_avoid_others, wander, keep_away_refuge)
 from abmsim.environment import cref
 
 class Model:
@@ -80,10 +80,6 @@ class Model:
         
         self.active_boid_rules = get_agent_rules(boid_rule_names)
         self.active_pred_rules = get_pred_rules(pred_rule_names)
-        
-        
-        
-        
     
     def step(self, avoid_dist, flee_dist, catch_dist, speedlim):
         # remove eaten boids
@@ -95,48 +91,55 @@ class Model:
         
         # boid interaction rules
         for b in self.boids:
+            # Always apply detection first
             detect_preds(b, self.predators, flee_dist)
+
+            # Conditional behavior based on state
             if b.state == "alarm":
                 flee(b, self.predators, flee_dist)
             else:
-                move_toward_center(b, self.boids)
-                avoid_others(b, self.boids, avoid_dist)
-                match_velocity(b, self.boids)
+                # Apply compiled social/movement rules
+                for rule_name, rule_func in self.active_boid_rules:
+                    if rule_name == 'avoid_others':
+                        rule_func(b, self.boids, avoid_dist)
+                    elif rule_name == 'detect_preds':
+                        # Already applied above, skip
+                        pass
+                    elif rule_name == 'wander':
+                        rule_func(b)
+                    elif rule_name in ['match_velocity', 'move_toward_center']:
+                        rule_func(b, self.boids)
+                    else:
+                        rule_func(b, self.boids)
+
             limit_speed(b, speedlim)
             b.x = (b.x + b.dx) % config.WIDTH
             b.y = (b.y + b.dy) % config.HEIGHT
-
+        
         # predator interaction rules
         for p in self.predators:
-            p.signal_state = "off"
-            
+            # Always check for prey first
             prey_detected = check_prey(p, self.boids)
-            signal_detected = check_signal(p, self.predators)
-            pred_avoid = pred_repel_check(p, self.predators)
-            #keep_away_refuge(p, cref)
+
+            # Conditional hunting behavior
             if prey_detected:
-                p.signal_state = "on"
                 hunt(p, self.boids)
-                if pred_avoid[1]:
-                    pred_repel_hunt(p, self.predators)
+
+            # Apply compiled rules (movement, social, etc.)
+            for rule_name, rule_func in self.active_pred_rules:
+                if rule_name in ['check_prey', 'hunt']:
+                    # Already handled above, skip
+                    pass
                 else:
-                    move_toward_center(p, self.predators)
-            elif signal_detected:
-                p.signal_state = "on"
-                if pred_avoid[1]:
-                    pred_repel_hunt(p, self.predators)
-                else:
-                    move_toward_signal(p)
-            else:
-                p.signal_state = "off"
-                if pred_avoid[0]:
-                    pred_repel_wander(p, self.predators)
-                else:
-                    wander(p)
+                    # All other rules just need (predator, predators_list)
+                    if rule_name == 'wander':
+                        rule_func(p)
+                    else:
+                        rule_func(p, self.predators)
+
             limit_speed(p, speedlim)
             p.x = (p.x + p.dx) % config.WIDTH
-            p.y = (p.y + p.dy) % config.HEIGHT
-    
+            p.y = (p.y + p.dy) % config.HEIGHT    
     def clear(self):
         self.boids.clear()
         self.predators.clear()
