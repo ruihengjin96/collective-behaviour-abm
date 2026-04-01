@@ -1,13 +1,47 @@
 import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
-from abmsim.functions.agent_rules import move_toward_center
+from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_within_bounds
+# -------------------------------
+# RULE REGISTRY
+# -------------------------------
+predator_rule_groups = {
+    'pred movement rules': ['pred_wander', 'limit_speed', 'keep_within_bounds'],
+    'pred social rules': ['move_toward_center', 'pred_repel_check', 'pred_repel_wander', 'pred_repel_hunt'], # Need to simplify, one repel rule is sufficient
+    'predation rules': ['check_prey', 'hunt']
+}
+
+predator_rule_names = {
+    'pred_wander': pred_wander,
+    'limit_speed': limit_speed,
+    'move_toward_center': move_toward_center,
+    'keep_within_bounds': keep_within_bounds,
+    'pred_repel_check': pred_repel_check,
+    'pred_repel_wander': pred_repel_wander,
+    'pred_repel_hunt': pred_repel_hunt,
+    'check_prey': check_prey,
+    'hunt': hunt,
+}
+
+def get_pred_rules(rule_names):
+    result = []
+    for name in rule_names:
+        if name in predator_rule_groups:
+            for func_name in predator_rule_groups[name]:
+                func = predator_rule_names.get(func_name)
+                if func:
+                    result.append((func_name, func))
+        elif name in predator_rule_names:
+            func = predator_rule_names.get(name)
+            result.append((name, func))
+    return result
+    
 
 # -------------------------------
 # BASIC MOVEMENT RULES
 # -------------------------------
-def wander(pred):
-    delta_head = random.uniform(-pred.max_turn_wander, pred.max_turn_wander) 
+def pred_wander(pred):
+    delta_head = random.uniform(-pred.max_turn, pred.max_turn) 
     pred.head += delta_head
     pred.dx = pred.speed * math.cos(pred.head)
     pred.dy = pred.speed * math.sin(pred.head)
