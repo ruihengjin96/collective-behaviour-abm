@@ -3,11 +3,10 @@ import random
 from abmsim.agents import Boid, Predator
 import abmsim.config as config
 from abmsim.functions.agent_rules import (
-    avoid_others, match_velocity, is_eaten, detect_preds, flee, limit_speed, move_toward_center
+    get_agent_rules, avoid_others, match_velocity, is_eaten, detect_preds, flee, limit_speed, move_toward_center
 )
-from abmsim.functions.predator_rules import (hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
+from abmsim.functions.predator_rules import (get_pred_rules, hunt, check_prey, check_signal, pred_repel_check, pred_repel_hunt, move_toward_signal, pred_repel_wander, wander, keep_away_refuge)
 from abmsim.environment import cref
-
 
 class Model:
     def __init__(self,
@@ -24,6 +23,9 @@ class Model:
         
         self.boids = []
         self.predators = []
+        self.active_boid_rules = []
+        self.active_pred_rules = []
+        self.compile_rules()
 
     def init_agents(self, agent_type, n):
         agent_config = {
@@ -57,23 +59,29 @@ class Model:
                 )
             )
 
-    def compile_rules(self):
-        self.active_boid_rules = ["wander"] #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
-        self.active_pred_rules = ["wander"]
-        
+    def compile_rules(self):        
         # BOID RULES
+        boid_rule_names = []
+        boid_rule_names.append('agent movement rules') #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
         if self.enable_social:
-            self.active_boid_rules.append("agent social rules") #Q: how do I group the rules in the rule scripts and then pass one string here to append all the relevant rules?""" 
+            boid_rule_names.append("agent social rules") #Q: how do I group the rules in the rule scripts and then pass one string here to append all the relevant rules?""" 
         if self.enable_predation:
-            self.active_boid_rules.append("pred avoid rules")
+            boid_rule_names.append("pred avoid rules")
         
         # PREDATOR RULES
+        pred_rule_names = []
+        pred_rule_names.append('pred movement rules')
         if self.enable_classdiff is False:
-            self.active_pred_rules.append("agent social rules")
+            pred_rule_names.append("agent social rules")
         else:
-            self.active_pred_rules.append("pred social rules")
+            pred_rule_names.append("pred social rules")
         if self.enable_predation:
-            self.active_pred_rules.append("predation rules")
+            pred_rule_names.append("predation rules")
+        
+        self.active_boid_rules = get_agent_rules(boid_rule_names)
+        self.active_pred_rules = get_pred_rules(pred_rule_names)
+        
+        
         
         
     
