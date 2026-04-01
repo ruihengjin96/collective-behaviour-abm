@@ -39,7 +39,11 @@ def get_agent_rules(rule_names):
 # Movement rules
 # -------------------------------
 def wander(boid):
-    return
+    delta_head = random.uniform(-boid.max_turn, boid.max_turn) 
+    boid.head += delta_head
+    boid.dx = boid.speed * math.cos(boid.head)
+    boid.dy = boid.speed * math.sin(boid.head)
+
 
 def limit_speed(boid, speedlim):
     speed = math.hypot(boid.dx, boid.dy)
