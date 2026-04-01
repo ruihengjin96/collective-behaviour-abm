@@ -1,6 +1,40 @@
 import math
 from abmsim.config import SPEED_LIMIT, FLEE_FACTOR, AVOID_FACTOR, BOID_VIS_RANGE, MATCHING_FACTOR, CATCH_DIST, TURN_FACTOR, MARGIN, WIDTH, HEIGHT, SPEED_LIMIT
+# -------------------------------
+# Rule registry
+# -------------------------------
+agent_rule_groups = {
+    'agent movement rules': ['wander', 'limit_speed', 'keep_within_bounds'],
+    'agent social rules': ['avoid_others', 'match_velocity', 'move_toward_center'],
+    'pred avoid rules': ['detect_preds', 'flee', 'is_eaten']
+}
 
+agent_rule_names = {
+    'wander': wander,
+    'limit_speed': limit_speed,
+    'keep_within_bounds': keep_within_bounds,
+    'avoid_others': avoid_others,
+    'match_velocity': match_velocity,
+    'move_toward_center': move_toward_center,
+    'detect_preds': detect_preds,
+    'flee': flee,
+    'is_eaten': is_eaten
+}
+
+def get_agent_rules(rule_names):
+    result = []
+    
+    for name in rule_names:
+        if name in agent_rule_groups:
+            for func_name in agent_rule_groups[name]:
+                func = agent_rule_names.get(func_name)
+                if func:
+                    result.append((func_name, func))
+        elif name in agent_rule_names:
+            func = agent_rule_names.get(name)
+            result.append((name, func))
+    return result
+                
 # -------------------------------
 # Movement rules
 # -------------------------------
