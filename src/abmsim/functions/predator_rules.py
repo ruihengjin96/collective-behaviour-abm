@@ -1,27 +1,51 @@
-# -------------------------------
-# PREDATOR RULES
-# -------------------------------
 import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
+from abmsim.functions.agent_rules import move_toward_center
 
-"""Staying away from refuge"""
-def keep_away_refuge(pred, cref):
-    dist_to_c = pred.distance(cref)
-    if dist_to_c == 0:
-        return
+# -------------------------------
+# BASIC MOVEMENT RULES
+# -------------------------------
+def wander(pred):
+    delta_head = random.uniform(-pred.max_turn_wander, pred.max_turn_wander) 
+    pred.head += delta_head
+    pred.dx = pred.speed * math.cos(pred.head)
+    pred.dy = pred.speed * math.sin(pred.head)
+
+# -------------------------------
+# PREDATOR SOCIAL RULES
+# -------------------------------"
+def pred_repel_check(pred, preds):
+    repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
+    repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
     
-    dist_to_bound = dist_to_c - cref.r
-    if dist_to_bound > cref.buff:
-        return
+    return [len(repel_wander)>0, len(repel_hunt)>0]
 
-    ux = (pred.x - cref.x) / dist_to_c
-    uy = (pred.y - cref.y) / dist_to_c
-    pred.dx += ux * cref.repel
-    pred.dy += uy * cref.repel
+def pred_repel_wander(pred, preds):
+    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
+    movex = 0
+    movey = 0
+    for other in nearby_other_preds:
+        movex += pred.x - other.x
+        movey += pred.y - other.y
 
-# --------------------------------
-"""Detecting and hunting prey"""
+    pred.dx += movex * PRED_REP_WANDER_FACTOR
+    pred.dy += movey * PRED_REP_WANDER_FACTOR
+
+def pred_repel_hunt(pred, preds):
+    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
+    movex = 0
+    movey = 0
+    for other in nearby_other_preds:
+        movex += pred.x - other.x
+        movey += pred.y - other.y
+
+    pred.dx += movex * PRED_REP_HUNT_FACTOR
+    pred.dy += movey * PRED_REP_HUNT_FACTOR    
+
+# -------------------------------
+# PREDATION RULES
+# -------------------------------
 def check_prey(pred, boids):
     nearby_boids = [b for b in boids if pred.distance(b) <= HUNTING_SIGHT]
     """More explicit way:
@@ -56,45 +80,10 @@ def hunt(pred, boids):
     pred.dx += move_x * 0.02 
     pred.dy += move_y * 0.02
     """Note: should parameterize this factor"""
-# --------------------------------       
 
-def wander(pred):
-    delta_head = random.uniform(-pred.max_turn_wander, pred.max_turn_wander) 
-    pred.head += delta_head
-    pred.dx = pred.speed * math.cos(pred.head)
-    pred.dy = pred.speed * math.sin(pred.head)
-
-# --------------------------------
-"""Different repulsion factors depending on if in hunt mode"""
-def pred_repel_check(pred, preds):
-    repel_wander = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
-    repel_hunt = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
-    
-    return [len(repel_wander)>0, len(repel_hunt)>0]
-
-def pred_repel_wander(pred, preds):
-    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_wander]
-    movex = 0
-    movey = 0
-    for other in nearby_other_preds:
-        movex += pred.x - other.x
-        movey += pred.y - other.y
-
-    pred.dx += movex * PRED_REP_WANDER_FACTOR
-    pred.dy += movey * PRED_REP_WANDER_FACTOR
-
-def pred_repel_hunt(pred, preds):
-    nearby_other_preds = [p for p in preds if p != pred and pred.distance(p) < pred.repel_dist_hunt]
-    movex = 0
-    movey = 0
-    for other in nearby_other_preds:
-        movex += pred.x - other.x
-        movey += pred.y - other.y
-
-    pred.dx += movex * PRED_REP_HUNT_FACTOR
-    pred.dy += movey * PRED_REP_HUNT_FACTOR    
-
-# --------------------------------
+# -------------------------------
+# HUNTING SIGNALING RULES
+# -------------------------------
 """Extra signaling related rules that could be excluded for the core model"""
 def check_signal(pred, preds):
     signal_preds = [p for p in preds if p.signal_state == "on" and p != pred]
@@ -123,3 +112,22 @@ def move_toward_signal(pred):
     # Update heading and speed if needed
     pred.head = math.atan2(pred.dy, pred.dx)
     pred.speed = math.hypot(pred.dx, pred.dy)
+
+# -------------------------------
+# Refuge related rules
+# -------------------------------
+"""Staying away from refuge"""
+def keep_away_refuge(pred, cref):
+    dist_to_c = pred.distance(cref)
+    if dist_to_c == 0:
+        return
+    
+    dist_to_bound = dist_to_c - cref.r
+    if dist_to_bound > cref.buff:
+        return
+
+    ux = (pred.x - cref.x) / dist_to_c
+    uy = (pred.y - cref.y) / dist_to_c
+    pred.dx += ux * cref.repel
+    pred.dy += uy * cref.repel
+
