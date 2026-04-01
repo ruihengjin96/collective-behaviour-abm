@@ -1,18 +1,18 @@
 import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
-from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_within_bounds
+from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_within_bounds, wander
 # -------------------------------
 # RULE REGISTRY
 # -------------------------------
 predator_rule_groups = {
-    'pred movement rules': ['pred_wander', 'limit_speed', 'keep_within_bounds'],
+    'pred movement rules': ['wander', 'limit_speed', 'keep_within_bounds'],
     'pred social rules': ['move_toward_center', 'pred_repel_check', 'pred_repel_wander', 'pred_repel_hunt'], # Need to simplify, one repel rule is sufficient
     'predation rules': ['check_prey', 'hunt']
 }
 
 predator_rule_names = {
-    'pred_wander': pred_wander,
+    'wander': wander,
     'limit_speed': limit_speed,
     'move_toward_center': move_toward_center,
     'keep_within_bounds': keep_within_bounds,
@@ -40,11 +40,7 @@ def get_pred_rules(rule_names):
 # -------------------------------
 # BASIC MOVEMENT RULES
 # -------------------------------
-def pred_wander(pred):
-    delta_head = random.uniform(-pred.max_turn, pred.max_turn) 
-    pred.head += delta_head
-    pred.dx = pred.speed * math.cos(pred.head)
-    pred.dy = pred.speed * math.sin(pred.head)
+### Imported from agent_rules.py --> wander()
 
 # -------------------------------
 # PREDATOR SOCIAL RULES
