@@ -83,11 +83,11 @@ class Model:
             pred_rule_names.append('pred movement rules')
         if self.enable_social and not (self.enable_classdiff or self.enable_predation):
             pred_rule_names = ['agent social rules']
-        if self.enable_social and self.enable_classdiff and not self.enable_social:
+        if self.enable_social and self.enable_classdiff and not self.enable_predation:
             pred_rule_names = ['pred social rules']
         if self.enable_social and self.enable_classdiff and self.enable_predation:
-            pred_rule_names = []
             pred_rule_names.append('predation rules')
+            pred_rule_names.append('pred social rules')
         
         self.active_pred_rules = get_pred_rules(pred_rule_names)
     
