@@ -64,6 +64,7 @@ class Model:
         boid_rule_names = []
         boid_rule_names.append('agent movement rules') #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
         if self.enable_social:
+            boid_rule_names = []
             boid_rule_names.append("agent social rules") #Q: how do I group the rules in the rule scripts and then pass one string here to append all the relevant rules?""" 
         if self.enable_predation:
             boid_rule_names.append("pred avoid rules")
@@ -72,6 +73,7 @@ class Model:
         pred_rule_names = []
         pred_rule_names.append('pred movement rules')
         if self.enable_classdiff is False:
+            pred_rule_names = []
             pred_rule_names.append("agent social rules")
         else:
             pred_rule_names.append("pred social rules")
