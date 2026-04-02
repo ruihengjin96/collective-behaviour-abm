@@ -62,57 +62,61 @@ class Model:
     def compile_rules(self):        
         # BOID RULES
         boid_rule_names = []
-        boid_rule_names.append('agent movement rules') #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
-        if self.enable_social:
+        if not self.enable_social and not self.enable_classdiff and not self.enable_predation:
+            boid_rule_names.append('agent movement rules') #Q: how do I pass a string and have it refer to a function? also need to write a wander for boids"""
+        if self.enable_social and not (self.enable_classdiff or self.enable_predation):
             boid_rule_names = []
-            boid_rule_names.append("agent social rules") #Q: how do I group the rules in the rule scripts and then pass one string here to append all the relevant rules?""" 
-        if self.enable_predation:
+            boid_rule_names.append("agent social rules")
+        if self.enable_social and self.enable_classdiff and not self.enable_social:
+            boid_rule_names = []
+            boid_rule_names.append("agent social rules")
+        if self.enable_social and self.enable_classdiff and self.enable_predation:
+            boid_rule_names = []
             boid_rule_names.append("pred avoid rules")
+            boid_rule_names.append("agent social rules")
         
+        self.active_boid_rules = get_agent_rules(boid_rule_names) 
+                        
         # PREDATOR RULES
         pred_rule_names = []
-        pred_rule_names.append('pred movement rules')
-        if self.enable_classdiff is False:
+        if not self.enable_social and not self.enable_classdiff and not self.enable_predation:
+            pred_rule_names.append('pred movement rules')
+        if self.enable_social and not (self.enable_classdiff or self.enable_predation):
+            pred_rule_names = ['agent social rules']
+        if self.enable_social and self.enable_classdiff and not self.enable_social:
+            pred_rule_names = ['pred social rules']
+        if self.enable_social and self.enable_classdiff and self.enable_predation:
             pred_rule_names = []
-            pred_rule_names.append("agent social rules")
-        else:
-            pred_rule_names.append("pred social rules")
-        if self.enable_predation:
-            pred_rule_names.append("predation rules")
+            pred_rule_names.append('predation rules')
         
-        self.active_boid_rules = get_agent_rules(boid_rule_names)
         self.active_pred_rules = get_pred_rules(pred_rule_names)
     
     def step(self, avoid_dist, flee_dist, catch_dist, speedlim):
         # remove eaten boids
-        eaten_boids = []
-        for b in self.boids:
-            if is_eaten(b, self.predators, catch_dist):
-                eaten_boids.append(b)
-        self.boids = [b for b in self.boids if b not in eaten_boids]
+        if self.enable_predation:
+            eaten_boids = []
+            for b in self.boids:
+                if is_eaten(b, self.predators, catch_dist):
+                    eaten_boids.append(b)
+            self.boids = [b for b in self.boids if b not in eaten_boids]
         
         # boid interaction rules
         for b in self.boids:
-            # Always apply detection first
-            detect_preds(b, self.predators, flee_dist)
-
-            # Conditional behavior based on state
-            if b.state == "alarm":
-                flee(b, self.predators, flee_dist)
-            else:
-                # Apply compiled social/movement rules
-                for rule_name, rule_func in self.active_boid_rules:
-                    if rule_name == 'avoid_others':
-                        rule_func(b, self.boids, avoid_dist)
-                    elif rule_name == 'detect_preds':
-                        # Already applied above, skip
-                        pass
-                    elif rule_name == 'wander':
-                        rule_func(b)
-                    elif rule_name in ['match_velocity', 'move_toward_center']:
-                        rule_func(b, self.boids)
-                    else:
-                        rule_func(b, self.boids)
+            # Apply compiled social/movement rules
+            for rule_name, rule_func in self.active_boid_rules:
+                if rule_name == 'avoid_others':
+                    rule_func(b, self.boids, avoid_dist)
+                elif rule_name == 'detect_preds':
+                    # Already applied above, skip
+                    pass
+                elif rule_name == 'wander':
+                    rule_func(b)
+                elif rule_name in ['match_velocity', 'move_toward_center']:
+                    rule_func(b, self.boids)
+                elif rule_name == 'flee':
+                    rule_func(b, self.predators, flee_dist)
+                else:
+                    rule_func(b, self.boids)
 
             limit_speed(b, speedlim)
             b.x = (b.x + b.dx) % config.WIDTH
@@ -120,29 +124,21 @@ class Model:
         
         # predator interaction rules
         for p in self.predators:
-            # Always check for prey first
-            prey_detected = check_prey(p, self.boids)
-
-            # Conditional hunting behavior
-            if prey_detected:
-                hunt(p, self.boids)
-
-            # Apply compiled rules (movement, social, etc.)
             for rule_name, rule_func in self.active_pred_rules:
-                if rule_name in ['check_prey', 'hunt']:
-                    # Already handled above, skip
-                    pass
+                if rule_name == 'wander':
+                    rule_func(p)
+                elif rule_name == 'hunt':
+                    rule_func(p, self.boids)  # hunt needs boids
+                elif rule_name == 'avoid_others':
+                    rule_func(p,self.predators, avoid_dist)
                 else:
-                    # All other rules just need (predator, predators_list)
-                    if rule_name == 'wander':
-                        rule_func(p)
-                    else:
-                        rule_func(p, self.predators)
+                    rule_func(p, self.predators)
 
             limit_speed(p, speedlim)
             p.x = (p.x + p.dx) % config.WIDTH
-            p.y = (p.y + p.dy) % config.HEIGHT    
+            p.y = (p.y + p.dy) % config.HEIGHT
+            
     def clear(self):
         self.boids.clear()
         self.predators.clear()
-#test connectivity
+

@@ -1,13 +1,16 @@
-# boidsim/ui_tk.py
+import sys
 import tkinter as tk
 import math
 from abmsim.model import Model
 import abmsim.config as config
 from abmsim.config import WIDTH, HEIGHT, DFLT_AVOID_DIST, DFLT_FLEE_DIST, REFUGE_R, REFUGE_CX, REFUGE_CY, SPEED_LIMIT, CATCH_DIST
 
-
-def run():
-    model = Model()
+def run(enable_social = None, enable_classdiff = None, enable_predation = None):
+    model = Model(
+          enable_social = enable_social,
+          enable_classdiff = enable_classdiff,
+          enable_predation = enable_predation
+    )
     model.init_agents('Boid', config.NUM_BOIDS) # the first argument needs to be a string, i.e. quotation marks needed
     # model.init_predators() # commented out so as to not release predators until button is pressed
 

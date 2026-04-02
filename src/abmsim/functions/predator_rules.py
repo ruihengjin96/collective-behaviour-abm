@@ -1,7 +1,7 @@
 import random
 import math
 from abmsim.config import HUNTING_SIGHT, PRED_REP_WANDER_FACTOR, PRED_REP_HUNT_FACTOR
-from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_within_bounds, wander
+from abmsim.functions.agent_rules import move_toward_center, limit_speed, keep_within_bounds, wander, avoid_others, match_velocity
 # -------------------------------
 # RULE REGISTRY
 # -------------------------------
@@ -62,6 +62,8 @@ def pred_avoid_others(pred, preds):
 # -------------------------------
 # PREDATION RULES
 # -------------------------------
+
+# not going to use check_prey anymore
 def check_prey(pred, boids):
     nearby_boids = [b for b in boids if pred.distance(b) <= HUNTING_SIGHT]
     """More explicit way:
@@ -77,6 +79,7 @@ def check_prey(pred, boids):
     else:
         pred.signal_state = "off"
         return False
+
 
 def hunt(pred, boids):
     # 1. Find all boids within the hunting sight
@@ -151,8 +154,9 @@ def keep_away_refuge(pred, cref):
 
 predator_rule_groups = {
     'pred movement rules': ['wander'],
-    'pred social rules': ['move_toward_center', 'pred_repel_check', 'pred_avoid_others', 'pred_repel_hunt'], # Need to simplify, one repel rule is sufficient
-    'predation rules': ['check_prey', 'hunt']
+    'pred social rules': ['move_toward_center', 'pred_avoid_others'], # Need to simplify, one repel rule is sufficient
+    'predation rules': ['hunt'],
+    'agent social rules': ['avoid_others', 'match_velocity', 'move_toward_center']
 }
 
 predator_rule_names = {
@@ -162,4 +166,6 @@ predator_rule_names = {
     'pred_avoid_others': pred_avoid_others,
     'check_prey': check_prey,
     'hunt': hunt,
+    'match_velocity': match_velocity,
+    'avoid_others': avoid_others
 }

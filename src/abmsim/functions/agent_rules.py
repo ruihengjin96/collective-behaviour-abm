@@ -103,29 +103,32 @@ def detect_preds(boid, preds, flee_dist):
         boid.state = "calm"     
 
 def flee(boid, preds, flee_dist):
-    #find the predators that are within the flee zone
-    close_preds = [p for p in preds if boid.distance(p) < flee_dist]
-    if not close_preds:
+    if boid.state == 'alarm':
+        #find the predators that are within the flee zone
+        close_preds = [p for p in preds if boid.distance(p) < flee_dist]
+        if not close_preds:
+            return
+        #calculate their average position
+        avg_x = sum(p.x for p in close_preds)/ len(close_preds)
+        avg_y = sum(p.y for p in close_preds)/ len(close_preds)
+        
+        away_x = boid.x - avg_x
+        away_y = boid.y - avg_y
+        
+        dist = math.hypot(away_x, away_y)
+        if dist > 0:
+            away_x /= dist
+            away_y /= dist
+        
+        DESIRED_FLEE_SPEED = SPEED_LIMIT * 1.05
+        desired_dx = away_x * DESIRED_FLEE_SPEED
+        desired_dy = away_y * DESIRED_FLEE_SPEED
+        
+        STEER_ALPHA = 0.15
+        boid.dx += (desired_dx - boid.dx) * STEER_ALPHA * FLEE_FACTOR
+        boid.dy += (desired_dy - boid.dy) * STEER_ALPHA * FLEE_FACTOR
+    else:
         return
-    #calculate their average position
-    avg_x = sum(p.x for p in close_preds)/ len(close_preds)
-    avg_y = sum(p.y for p in close_preds)/ len(close_preds)
-    
-    away_x = boid.x - avg_x
-    away_y = boid.y - avg_y
-    
-    dist = math.hypot(away_x, away_y)
-    if dist > 0:
-        away_x /= dist
-        away_y /= dist
-    
-    DESIRED_FLEE_SPEED = SPEED_LIMIT * 1.05
-    desired_dx = away_x * DESIRED_FLEE_SPEED
-    desired_dy = away_y * DESIRED_FLEE_SPEED
-    
-    STEER_ALPHA = 0.15
-    boid.dx += (desired_dx - boid.dx) * STEER_ALPHA * FLEE_FACTOR
-    boid.dy += (desired_dy - boid.dy) * STEER_ALPHA * FLEE_FACTOR
 
 def is_eaten(boid, predators, catch_dist):
     for pred in predators:
@@ -139,7 +142,7 @@ def is_eaten(boid, predators, catch_dist):
 agent_rule_groups = {
     'agent movement rules': ['wander'],
     'agent social rules': ['avoid_others', 'match_velocity', 'move_toward_center'],
-    'pred avoid rules': ['detect_preds']
+    'pred avoid rules': ['detect_preds', 'flee']
 }
 
 agent_rule_names = {
