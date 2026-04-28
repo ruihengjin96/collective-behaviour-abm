@@ -67,7 +67,7 @@ class Model:
         if self.enable_social and not (self.enable_classdiff or self.enable_predation):
             boid_rule_names = []
             boid_rule_names.append("agent social rules")
-        if self.enable_social and self.enable_classdiff and not self.enable_social:
+        if self.enable_social and self.enable_classdiff and not self.enable_predation:
             boid_rule_names = []
             boid_rule_names.append("agent social rules")
         if self.enable_social and self.enable_classdiff and self.enable_predation:

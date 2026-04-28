@@ -14,7 +14,7 @@ HEIGHT = 600
 MARGIN = 100
 
 ## BOID CONFIGURATION
-NUM_BOIDS = 0 # default 200
+NUM_BOIDS = 20 # default 200
 BOID_VIS_RANGE = 75
 SPEED_LIMIT = 10
 TURN_FACTOR = 3 # for turning away from the arena walls
